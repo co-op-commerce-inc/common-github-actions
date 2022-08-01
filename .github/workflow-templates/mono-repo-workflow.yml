@@ -1,0 +1,51 @@
+# This is a workflow meant to be used with a mono repository.
+# Please note that this workflow initially pulls common actions from the 
+# common-github-actions repository. The actual chain of actions used are 
+# defined within each root action.
+# The workflow uses a step that detects file changes within a specified file path
+# and then uses the boolean output to conditionally trigger an action or use the run step.
+# To use this workflow correctly, you will need to complete the following setup steps:
+#
+# 1. ${{ github.token }} is scoped to the current repository, so to checkout the common actions
+# repository that is private, you will need to provide a GH_PAT secret with full repo and workflow permissions.
+#
+# 2. If you are using common actions, you must declare all secrets and env variables either
+# withing your repository settings or in this workflow. It is advised to define global
+# environment variables in the repository settings or top level env key. Use the filtering
+# action to define specific env variables.
+
+name: Mono Repository Workflow
+
+on:
+  push:
+    branches: [ $default-branch ]
+
+permissions:
+ id-token: write
+ contents: read
+
+env:
+  GLOBAL_VAR: everything 
+
+jobs:
+  run-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          repository: co-op-commerce-inc/common-github-actions
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            example:
+              - 'example/**'
+
+      - name: running tests actions on example directory
+        if: steps.filter.outputs.example == 'true'
+        uses: ./.github/actions/tests
+        env:
+          SPECIFIC_VAR: this
