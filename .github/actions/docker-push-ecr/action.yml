@@ -1,0 +1,39 @@
+name: 'Build Docker Image and Push to ECR'
+
+inputs:
+  aws-region:
+    description: '${{ env.AWS_REGION }}'
+    required: true
+  aws-account-id:
+    description: '${{ secrets.AWS_ACCOUNT_ID }}'
+    required: true
+  gha-role-name:
+    description: '${{ secrets.GHA_ROLE_NAME }}'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - uses: benjlevesque/short-sha@v1.2
+      id: short-sha
+      with:
+        length: 8
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/${{ inputs.gha-role-name }}
+        aws-region: ${{ inputs.aws-region }}
+
+    - name: Login to Amazon ECR Private
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push docker image to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        COMMIT_SHA: ${{ steps.short-sha.outputs.sha }}
+      run: |
+        docker build -t $REGISTRY/$REPOSITORY:$COMMIT_SHA -t $REGISTRY/$REPOSITORY:latest .
+        docker image push --all-tags $REGISTRY/$REPOSITORY

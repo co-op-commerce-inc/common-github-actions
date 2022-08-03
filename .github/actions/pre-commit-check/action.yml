@@ -1,0 +1,16 @@
+name: "Check Pre-Commit-Configuration"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check file existence
+      id: check_files
+      uses: andstor/file-existence-action@v1
+      with:
+        files: "./main/.pre-commit-config.yaml"
+
+    - name: File contents
+      if: steps.check_files.outputs.files_exists == 'true'
+      run: |
+        ./actions/.github/scripts/pre-commit-hook-check.sh
+      shell: bash
