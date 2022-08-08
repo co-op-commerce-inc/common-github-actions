@@ -1,0 +1,25 @@
+name: 'Sends a Simple Slack Message'
+
+inputs:
+  message:
+    description: '${{ env.SLACK_MESSAGE }}'
+    required: true
+  channel:
+    description: '${{ env.SLACK_CHANNEL }}'
+    required: true
+  username:
+    description: '${{ env.SLACK_USERNAME }}'
+    required: true
+  webhook-url:
+    description: '${{ secrets.SLACK_WEBHOOK_URL }}'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Update Slack Channel
+      run: |
+        set -x; curl -X POST --data-urlencode \
+        "payload={\"channel\": \"${ inputs.channel }\", \"username\": \"${ inputs.username }\", \"text\": \"${ inputs.message }\"}" \
+        ${{ inputs.webhook-url }}
