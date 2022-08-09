@@ -2,6 +2,13 @@ name: Build Docker Image and Push to ECR
 
 on:
   workflow_call:
+    inputs:
+      aws-region:
+        required: true
+        type: string
+    secrets:
+      role-to-assume:
+        required: true
 
 permissions:
  id-token: write
@@ -24,8 +31,8 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        role-to-assume: ${{ secrets.GHA_ROLE_ARN }}
-        aws-region: ${{ env.AWS_REGION }}
+        role-to-assume: ${{ inputs.role-to-assume }}
+        aws-region: ${{ inputs.aws-region }}
 
     - name: Login to Amazon ECR Private
       id: login-ecr
