@@ -1,0 +1,26 @@
+name: 'Execute a Python Script'
+
+inputs:
+  script_path:
+    description: 'path to script and requirements.txt'
+    required: true
+  python_version:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Install Python Version
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python_version }} 
+
+    - name: Install Python Dependencies
+      run: |
+        pip install -r ${{ inputs.script_path}}/requirements.txt
+
+    - name: Run Python Script
+      run: |
+        python ${{ inputs.script_path}}/sagemaker_updater.py
+      shell: bash
