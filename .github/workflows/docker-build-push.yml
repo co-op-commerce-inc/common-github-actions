@@ -88,7 +88,7 @@ jobs:
           # generate Docker tags
           tags: | # in order: commit sha, develop, latest and version on main
             type=sha,enable=true,prefix=,suffix=,format=short
-            type=raw,value=develop,enable=${{ github.ref_name == 'dev' }}
+            type=raw,value=develop,enable=${{ github.ref_name == 'develop' }}
             type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
             type=raw,value=${{ needs.create-release.outputs.tag }},enable=${{ github.ref_name == 'main' }}
 
