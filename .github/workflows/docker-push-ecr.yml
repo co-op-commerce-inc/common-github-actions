@@ -26,7 +26,7 @@ jobs:
     - uses: benjlevesque/short-sha@v1.2
       id: short-sha
       with:
-        length: 8
+        length: 7
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -44,7 +44,7 @@ jobs:
         REPOSITORY: ${{ github.event.repository.name }}
         COMMIT_SHA: ${{ steps.short-sha.outputs.sha }}
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$COMMIT_SHA .
+        docker build -t ${REGISTRY}/${REPOSITORY}:${COMMIT_SHA} .
       shell: bash
 
     - name: Tag docker image with develop
@@ -53,7 +53,7 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ${{ github.event.repository.name }}
       run: |
-        docker tag $REGISTRY/$REPOSITORY:$COMMIT_SHA $REGISTRY/$REPOSITORY:develop
+        docker tag ${REGISTRY}/${REPOSITORY}:$COMMIT_SHA ${REGISTRY}/${REPOSITORY}:develop
       shell: bash
 
     - name: Tag docker image with latest
@@ -62,7 +62,7 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ${{ github.event.repository.name }}
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:latest --build-arg DEPLOY_ENV=${{ github.ref_name }} .
+        docker build -t ${REGISTRY}/${REPOSITORY}:latest --build-arg DEPLOY_ENV=${{ github.ref_name }} .
       shell: bash
   
     - name: Push docker image tags to Amazon ECR
@@ -70,5 +70,5 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ${{ github.event.repository.name }}
       run: |
-        docker image push --all-tags $REGISTRY/$REPOSITORY
+        docker image push --all-tags ${REGISTRY}/${REPOSITORY}
       shell: bash
