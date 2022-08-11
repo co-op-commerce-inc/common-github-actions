@@ -52,6 +52,7 @@ jobs:
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ${{ github.event.repository.name }}
+        COMMIT_SHA: ${{ steps.short-sha.outputs.sha }}
       run: |
         docker tag ${REGISTRY}/${REPOSITORY}:$COMMIT_SHA ${REGISTRY}/${REPOSITORY}:develop
       shell: bash
