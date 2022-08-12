@@ -19,6 +19,7 @@ runs:
     - name: Install Python Dependencies
       run: |
         pip install -r ${{ inputs.script_path}}/requirements.txt
+      shell: bash
 
     - name: Run Python Script
       run: |
