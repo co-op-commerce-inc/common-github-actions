@@ -89,7 +89,7 @@ jobs:
           tags: | # in order: commit sha, develop, latest and version on main
             type=sha,enable=true,prefix=0,suffix=,format=short
             type=raw,value=develop,enable=${{ github.ref_name == 'develop' }}
-            type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
+            type=raw,value=latest,enable=${{ github.ref_name == 'main' || 'master }}
             type=raw,value=${{ needs.create-release.outputs.tag }},enable=${{ github.ref_name == 'main' }}
 
       - name: Set up QEMU
